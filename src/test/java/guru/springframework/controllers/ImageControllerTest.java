@@ -11,6 +11,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import static org.junit.Assert.assertEquals;
@@ -33,12 +34,12 @@ public class ImageControllerTest {
     @Mock
     RecipeService recipeService;
 
-    ImageController controller;
+    private ImageController controller;
 
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         controller = new ImageController(imageService, recipeService);
@@ -69,6 +70,8 @@ public class ImageControllerTest {
         MockMultipartFile multipartFile =
                 new MockMultipartFile("imagefile", "testing.txt", "text/plain",
                         "Spring Framework Guru".getBytes());
+
+        when(imageService.saveImageFile(anyString(), any(MultipartFile.class))).thenReturn(Mono.empty());
 
         mockMvc.perform(multipart("/recipe/1/image").file(multipartFile))
                 .andExpect(status().is3xxRedirection())
